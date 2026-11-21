@@ -64,12 +64,13 @@ button.lnk{border:none;background:none;color:var(--acc2);padding:4px;font-weight
 .mob{display:none}.mrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:14px}.mrow>span:first-child{color:var(--mut)}
 .chip.off{background:transparent;border:1px dashed #CDBFAE;color:#A89A88}.chip.tg{cursor:pointer;user-select:none}.chip.tg:hover{outline:1px solid #B8652A}.br{display:grid;grid-template-columns:minmax(110px,36%) 1fr 104px;align-items:center;gap:8px;padding:5px 0;font-size:13px}.br:hover{background:var(--accbg)}.bl{color:var(--ink)}.bt{height:12px;background:#F3EDE3;border-radius:0 4px 4px 0;overflow:hidden}.bf{display:block;height:100%;background:var(--acc);border-radius:0 4px 4px 0}.bv{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}.mc{display:flex;align-items:flex-end;gap:6px;height:170px;padding-top:6px;border-bottom:1px solid var(--line)}.mcol{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;cursor:default}.mcol:hover .mbars{background:var(--accbg)}.mbars{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:2px;border-radius:4px}.mb{width:38%;max-width:18px;border-radius:4px 4px 0 0;display:block}.mb.r{background:#1F5A8C}.mb.a{background:#B5652B}.ml{font-size:11px;color:var(--mut);margin-top:4px;height:14px}.lg{display:flex;gap:16px;font-size:12px;color:var(--mut);margin-top:8px}.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.lg i.r{background:#1F5A8C}.lg i.a{background:#B5652B}.rxg select,.rxg input{width:100%;display:block;margin-top:3px;box-sizing:border-box}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#F3EDE3;border-radius:16px;padding:2px 9px;font-size:12px;white-space:nowrap;display:inline-block;margin:2px 2px 0 0}
 @media(max-width:760px){.desk{display:none}.mob{display:block}.mrow .qi,.mrow .pi{width:80px}.qi{width:54px;padding:6px 4px}.pi{width:62px;padding:6px 4px}table{font-size:13px}td,th{padding:6px 2px}h2{font-size:20px}.topin img{height:36px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.g2,.compare{grid-template-columns:1fr}.user{display:none}.hide-m{display:none}.kv{grid-template-columns:96px 1fr}}
-.cmd{border:1.5px dashed #999;padding:10px 12px;font-size:12px;color:#000;background:#fff;box-sizing:border-box;break-inside:avoid;page-break-inside:avoid;display:flex;flex-direction:column}
-.cmh{display:flex;align-items:center;gap:8px;border-bottom:2px solid #000;padding-bottom:6px}.cmh img{height:30px}.cms{font-size:17px;font-weight:800;letter-spacing:.5px}.cmc{margin-left:auto;white-space:nowrap;flex-shrink:0;font-size:17px;font-weight:800;border:2px solid #000;padding:2px 8px;border-radius:6px}
-.cmi{padding:6px 0;border-bottom:1px solid #000;line-height:1.45}.cmt{width:100%;border-collapse:collapse;margin-top:4px}.cmt td{border-bottom:1px solid #ccc;padding:4px 2px;font-size:13px}.cmt td.r{text-align:right;white-space:nowrap;font-size:14px}.cmt td.ck2{width:16px;text-align:center}
-.cmo{margin-top:6px;font-size:11px}.cmf{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;font-size:11px}
+.cmd{border:1.5px solid #000;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;box-sizing:border-box;break-inside:avoid;page-break-inside:avoid;display:flex;flex-direction:column;position:relative}
+.cmg{width:100%;border-collapse:collapse;font-size:14px;color:#000}.cmg th,.cmg td{border:1px solid #000;padding:3px 6px;height:20px}.cmg th{text-align:left;font-weight:800;color:#000;font-size:13px;text-transform:none;letter-spacing:0;background:none;white-space:nowrap;width:1%}.cmg td{text-align:center}.cmg td.sm2{font-size:11px}
+.cmb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:800;line-height:1.3;padding:10px 12px;gap:6px}
+.cms{font-size:.7em;letter-spacing:.5px;border-bottom:2px solid #000;padding-bottom:2px;margin-bottom:4px}.cmx{max-width:100%}.cmo{font-size:12px;font-weight:600;margin-top:8px}
+.cmk{position:absolute;right:6px;bottom:4px;font-size:10px;color:#555}
 #printArea{display:none}
-@media print{@page{size:A4;margin:8mm}body>*:not(#printArea){display:none!important}#printArea{display:grid!important;grid-template-columns:1fr 1fr;grid-auto-rows:136mm;gap:4mm}.cmd{height:136mm;overflow:hidden}}
+@media print{@page{size:A4;margin:8mm}body>*:not(#printArea){display:none!important}#printArea{display:grid!important;grid-template-columns:1fr 1fr;grid-auto-rows:140mm;gap:0}.cmd{height:140mm;overflow:hidden;margin:-.75px}}
 </style>
 </head>
 <body>
@@ -389,12 +390,14 @@ ${RX.map((r,i)=>{const a=apl(r);return `<div style="border:1px solid var(--line)
 let PD='',PSET=null;
 function comandas(p){const c=calc(p),out=[],grp={};c.L.forEach(l=>{if(l.c.cm==='nao'||!l.qq)return;if(l.c.cm==='individual')out.push({setor:l.c.setor,itens:[l]});else(grp[l.c.setor]=grp[l.c.setor]||[]).push(l)});
 Object.entries(grp).forEach(([s,L])=>out.push({setor:s,itens:L}));out.sort((a,b)=>SETORES.indexOf(a.setor)-SETORES.indexOf(b.setor));const n=out.length;return out.map((o,k)=>({...o,p,k:k+1,n}))}
-function cmHtml(o){const p=o.p,fm={ret:'RETIRADA NO MARROM GLACÊ',emb:'ENTREGA · EMBALAGENS',comp:'ENTREGA · SERVIÇO COMPLETO'}[p.fm]||'';
-return `<div class="cmd"><div class="cmh"><img src="${LOGO}" alt=""><div><div class="cms">${o.setor.toUpperCase()}</div><div class="sm">Comanda ${o.k} de ${o.n}</div></div><div class="cmc">${p.id}</div></div>
-<div class="cmi"><b>${p.cli}</b><br>${dbr(p.data)} (${DOW[dow(p.data)]}) · <b>${p.hora||'—'}</b> · ${totp(p)} pessoas<br><b>${fm}</b>${p.fm&&p.fm!=='ret'?' · '+p.local+' · '+p.cid:''}</div>
-<table class="cmt">${o.itens.map(l=>`<tr><td>${l.c.nome}</td><td class="r"><b>${fq(l.qq,l.c.un)}</b> ${uu(l.qq,l.c.un)}</td><td class="ck2">☐</td></tr>`).join('')}</table>
-${p.nota||p.obs?`<div class="cmo"><b>Obs.:</b> ${[p.obs,p.nota].filter(Boolean).join(' · ')}</div>`:''}
-<div class="cmf"><span>Pronto ☐</span><span>Conferido ☐</span><span>Resp.: ________</span></div></div>`}
+function cmHtml(o){const p=o.p,ent=p.fm&&p.fm!=='ret',n=o.itens.length,fs=n<=2?30:n<=4?23:n<=6?18:14;
+const it=o.itens.map(l=>`<div class="cmx">${fq(l.qq,l.c.un).toUpperCase()} ${uu(l.qq,l.c.un).toUpperCase()} | ${l.c.nome.toUpperCase()}</div>`).join('');
+return `<div class="cmd"><table class="cmg"><tr><th>PEDIDO:</th><td>${p.id}</td><th>ENTREGA:</th><td>${ent?'SIM':'NÃO'}</td></tr>
+<tr><th>CLIENTE:</th><td colspan="3">${p.cli.toUpperCase()}</td></tr>
+<tr><th>TELEFONE:</th><td colspan="3">${p.tel}</td></tr>
+<tr><th>HORÁRIO:</th><td>${p.hora||'—'}</td><th>DATA:</th><td>${p.data?p.data.split('-').reverse().slice(0,2).join('/'):'—'}</td></tr>
+${ent?`<tr><th>LOCAL:</th><td colspan="3" class="sm2">${p.local} · ${p.cid}</td></tr>`:''}</table>
+<div class="cmb" style="font-size:${fs}px"><div class="cms">${o.setor.toUpperCase()}</div>${it}${p.obs||p.nota?`<div class="cmo">OBS.: ${[p.obs,p.nota].filter(Boolean).join(' · ')}</div>`:''}</div><div class="cmk">${o.k}/${o.n}</div></div>`}
 function imprimir(L){const all=L.flatMap(comandas).filter(o=>!PSET||PSET.includes(o.setor));if(!all.length){flash='Nenhuma comanda para imprimir com esse filtro.';render();return}
 $('printArea').innerHTML=all.map(cmHtml).join('');setTimeout(()=>window.print(),50)}
 function vProd(){const ap=PED.filter(p=>p.st==='aprovado').sort((a,b)=>a.data.localeCompare(b.data));

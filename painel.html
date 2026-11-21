@@ -390,7 +390,7 @@ ${RX.map((r,i)=>{const a=apl(r);return `<div style="border:1px solid var(--line)
 let PD='',PSET=null;
 function comandas(p){const c=calc(p),out=[],grp={};c.L.forEach(l=>{if(l.c.cm==='nao'||!l.qq)return;if(l.c.cm==='individual')out.push({setor:l.c.setor,itens:[l]});else(grp[l.c.setor]=grp[l.c.setor]||[]).push(l)});
 Object.entries(grp).forEach(([s,L])=>out.push({setor:s,itens:L}));out.sort((a,b)=>SETORES.indexOf(a.setor)-SETORES.indexOf(b.setor));const n=out.length;return out.map((o,k)=>({...o,p,k:k+1,n}))}
-function cmHtml(o){const p=o.p,ent=p.fm&&p.fm!=='ret',n=o.itens.length,fs=n<=2?30:n<=4?23:n<=6?18:14;
+function cmHtml(o){const p=o.p,ent=p.fm&&p.fm!=='ret',n=o.itens.length,fs=n<=2?22:n<=4?18:n<=6?15:13;
 const it=o.itens.map(l=>`<div class="cmx">${fq(l.qq,l.c.un).toUpperCase()} ${uu(l.qq,l.c.un).toUpperCase()} | ${l.c.nome.toUpperCase()}</div>`).join('');
 return `<div class="cmd"><table class="cmg"><tr><th>PEDIDO:</th><td>${p.id}</td><th>ENTREGA:</th><td>${ent?'SIM':'NÃO'}</td></tr>
 <tr><th>CLIENTE:</th><td colspan="3">${p.cli.toUpperCase()}</td></tr>

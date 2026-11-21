@@ -73,13 +73,19 @@ boteco:{n:'Comidinhas de boteco',pk:[['Bronze','1 porção, 5 salgados fritos, 1
 pizza:{n:'Facciamo Pizza (rodízio em casa)',grp:[['ps','Pizzas salgadas',6,PZ],['pd','Pizzas doces',2,['Beijinho com gotas de chocolate','Beijinho com confete','Chocolate e morango','Chocolate e banana','Chocolate e confete']]]}
 };
 const LIM={Bronze:[1,5,1,1],Prata:[2,5,2,2],Ouro:[2,5,2,2]};
+const SG_DEF={lista:['Esfiha de carne','Esfiha de frango','Enroladinho de salsicha','Empada de frango','Empada de palmito','Bauruzinho','Folhado de frango','Pão de batata com catupiry','Mini pizza','Croissant de presunto e queijo','Mini quiche de alho-poró','Folhado de queijo brie e damasco'],
+pk:{'coffee|Simples':[0,1,2,3,4,5],'coffee|Mediano':[0,1,2,3,4,5,6,7,8],'coffee|Sofisticado':[0,1,2,3,4,5,6,7,8,9,10,11],'brunch|Simples':[0,1,2,3,4,5],'brunch|Mediano':[0,1,2,3,4,5,6,7,8],'brunch|Sofisticado':[0,1,2,3,4,5,6,7,8,9,10,11]},
+max:{'coffee|Simples':1,'coffee|Mediano':3,'coffee|Sofisticado':3,'brunch|Simples':1,'brunch|Mediano':3,'brunch|Sofisticado':3}};
+function sgLoad(){try{const j=JSON.parse(localStorage.getItem('mg_salgados_v1'));if(j&&j.lista&&j.pk&&j.max)return j}catch(e){}return JSON.parse(JSON.stringify(SG_DEF))}
+function sgSave(){try{localStorage.setItem('mg_salgados_v1',JSON.stringify(SG))}catch(e){}}
+let SG=sgLoad();
 const FX=['Até R$ 40 por pessoa','R$ 40 a R$ 70 por pessoa','R$ 70 a R$ 100 por pessoa','Acima de R$ 100 por pessoa','Não sei, quero uma sugestão'];
 const RS=['Celíacos (sem glúten)','Intolerantes à lactose','Diabéticos','Veganos','Vegetarianos'];
 const BB=['Água sem gás (galão 10 ou 20 L)','Água sem gás (garrafa 500 ml)','Água com gás (garrafa 500 ml)','Refrigerante Coca-Cola e Guaraná Antarctica','Suco de laranja natural (galão 5 L)','Suco de uva (garrafa 900 ml)','Cerveja long neck 330 ml','Cerveja garrafa 600 ml','Chopp','Vinho'];
 const UT=['Copos de vidro','Pratos de sobremesa','Garfos de sobremesa','Colheres de sobremesa','Jarra de inox','Mesa de plástico com 4 cadeiras','Toalha para mesa de 4 lugares','Carrinho bar cooler','Guardanapos de tecido','Sousplat'];
 const ES=['Mesa aparador','Toalha para aparador','Cozinha de apoio'];
 const OC=['','Aniversário','Batizado','Confraternização','Reunião de família','Encontro de amigos','Evento corporativo','Treinamento / palestra','Outro'];
-function nd(){return{nome:'',tel:'',oc:'',aniv:'',data:'',hora:'',cep:'',cid:'Piracicaba',rua:'',num:'',bai:'',comp:'',ad:'',c6:'',c2:'',sv:'',pk:'',sel:{},add:[],est:'',ent:'',cul:'',fm:'',lou:'',cop:'',ext:[],bb:[],ut:[],es:[],rs:[],fx:'',obs:''}}
+function nd(){return{nome:'',tel:'',oc:'',aniv:'',data:'',hora:'',cep:'',cid:'Piracicaba',rua:'',num:'',bai:'',comp:'',ad:'',c6:'',c2:'',sv:'',pk:'',sel:{},sgm:'',add:[],est:'',ent:'',cul:'',fm:'',lou:'',cop:'',ext:[],bb:[],ut:[],es:[],rs:[],fx:'',obs:''}}
 let s=1,d=nd(),GI={};
 const $=id=>document.getElementById(id);
 const tot=()=>(+d.ad||0)+(+d.c6||0)+(+d.c2||0);
@@ -92,7 +98,8 @@ function EXT(){const o=[];if(['almoco','pizza','boteco'].includes(d.sv))o.push('
 function grpHtml(k,title,it,max){const sel=d.sel[k]||[];GI[k]=it;return `<div class="ht">${title}${max?` <span class="sm">(escolha até ${max} · ${sel.length}/${max})</span>`:''}</div>`+it.map((x,i)=>`<label class="ck"><input type="checkbox" ${sel.includes(x)?'checked':''} onclick="return pk2('${k}',${i},${max||0})"><span>${x}</span></label>`).join('')}
 function pk2(k,i,max){const x=GI[k][i],a=d.sel[k]||[];if(a.includes(x))d.sel[k]=a.filter(y=>y!==x);else{if(max&&a.length>=max){$('er').textContent='Limite de '+max+' opções nesse grupo.';return false}d.sel[k]=a.concat(x)}r();return true}
 function svBody(){const v=SV[d.sv];let h='<div class="sub">';GI={};
-if(v.pk)h+=`<div class="ht">Escolha o padrão</div>`+v.pk.map(p=>`<div class="op ${d.pk===p[0]?'on':''}" onclick="d.pk='${p[0]}';d.sel={};r()"><b>${p[0]}</b><div class="sm">${p[1]}</div></div>`).join('');
+if(v.pk)h+=`<div class="ht">Escolha o padrão</div>`+v.pk.map(p=>`<div class="op ${d.pk===p[0]?'on':''}" onclick="d.pk='${p[0]}';d.sel={};d.sgm='';r()"><b>${p[0]}</b><div class="sm">${p[1]}</div></div>`).join('');
+if(d.pk&&SG.pk[d.sv+'|'+d.pk]&&SG.pk[d.sv+'|'+d.pk].length){const kk=d.sv+'|'+d.pk,mx=SG.max[kk]||0;h+=`<div class="ht">Quer escolher os salgados?</div>`+[['marrom','Deixa com o Marrom Glacê','O Franklin sugere os salgados na proposta'],['eu','Quero escolher','Escolha '+(mx===1?'1 salgado':'até '+mx+' salgados')+' da lista']].map(o=>`<div class="op ${(d.sgm||'marrom')===o[0]?'on':''}" onclick="d.sgm='${o[0]}';if(d.sgm==='marrom')delete d.sel.sg;r()"><b>${o[1]}</b><div class="sm">${o[2]}</div></div>`).join('');if(d.sgm==='eu')h+=grpHtml('sg','Salgados',SG.pk[kk].map(i=>SG.lista[i]).filter(Boolean),mx)}
 if(v.add)h+=`<div class="ht">Quer acrescentar algo? <span class="sm">(escolha quantos quiser)</span></div>`+cks(v.add,'add');
 if(d.sv==='boteco'&&d.pk){const L=LIM[d.pk];[['porc','Porções'],['salg','Salgados fritos'],['lan','Lanches'],['cer','Comidinhas na cerâmica']].forEach((g,j)=>{let it=BT[g[0]];if(d.pk!=='Ouro'&&g[0]==='porc')it=it.slice(0,3);h+=grpHtml(g[0],g[1],it,L[j])})}
 if(v.grp){if(d.sv==='pizza')h+=`<div class="sm" style="margin-top:6px">Levamos ingredientes, forno e estrutura. Inclui 3 pizzas aperitivo fixas (alho e óleo, alecrim, parmesão), pratos e talheres duráveis e guardanapos.</div>`+(tot()&&tot()<25?`<div class="wa">O rodízio é para no mínimo 25 pessoas. Para ${tot()}, consultamos a quantidade de sabores.</div>`:'');v.grp.forEach(g=>{h+=grpHtml(g[0],g[1],g[3],g[2])})}
@@ -134,14 +141,14 @@ ${pz?'':`<div class="ht">Locação de utensílios <span class="sm">(escolha quan
 <div class="ht">Bebidas consignadas <span class="sm">(escolha quantas quiser)</span></div>${cks(BB,'bb')}
 <div class="ht">Restrições alimentares <span class="sm">(marque todas que houver)</span></div>${cks(RS,'rs')}
 <label class="lb" style="margin-top:14px">Quanto pretende investir?</label><select id="fx">${['',...FX].map(o=>`<option ${d.fx===o?'selected':''}>${o}</option>`).join('')}</select>${warn()}<div class="er" id="er"></div>`}
-if(s===4){const v=SV[d.sv],dt=d.data.split('-').reverse().join('/'),it=Object.values(d.sel).flat();
+if(s===4){const v=SV[d.sv],dt=d.data.split('-').reverse().join('/'),it=Object.entries(d.sel).filter(e=>e[0]!=='sg').map(e=>e[1]).flat(),sgT=SG.pk[d.sv+'|'+d.pk]?((d.sel.sg||[]).length?d.sel.sg.join(', '):'Sugestão do Marrom Glacê'):'';
 let det=d.pk?'Padrão '+d.pk:'';if(d.sv==='almoco')det={trad:'Tradicional',int:'Internacional · '+d.cul,reg:'Regional · '+d.cul}[d.est];
 const fm={ret:'Retirada no Marrom Glacê',emb:'Só comida, em embalagens',comp:'Serviço completo'}[d.fm]||'Equipe no local';
 const row=(a,b)=>b?`<div class="rw"><span>${a}</span>${b}</div>`:'';
 h=`<div class="tt">Confira seu pedido</div><div style="margin-top:8px">
 ${row('Cliente',d.nome+' · '+d.tel)}${row('Evento',d.oc+(d.aniv?' de '+d.aniv:'')+' · '+dt+' às '+d.hora)}${row('Local',d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai+' · '+d.cid+(d.cep?' · CEP '+d.cep:''))}
 ${row('Pessoas',`${tot()} (${d.ad||0} adultos, ${d.c6||0} de 6 a 10, ${d.c2||0} de 2 a 5)`)}
-${row('Serviço',v.n+(det?' · '+det:''))}${row('Itens',it.concat(d.add).join(', '))}${row('Formato',fm)}${row('Louça',d.lou)}
+${row('Serviço',v.n+(det?' · '+det:''))}${row('Salgados',sgT)}${row('Itens',it.concat(d.add).join(', '))}${row('Formato',fm)}${row('Louça',d.lou)}
 ${row('Copeira',d.cop)}${row('Extras',d.ext.join(', '))}${row('Utensílios',d.ut.join(', '))}${row('Bebidas',d.bb.join(', '))}${row('Restrições',d.rs.join(', '))}${row('Investimento',d.fx)}</div>${warn()}
 <label class="lb">Alguma observação?</label><input id="obs" value="${d.obs}" placeholder="Algo que não viu aqui">
 <button class="pri" style="width:100%;margin-top:14px" onclick="s=5;r();window.scrollTo(0,0)">Enviar para o Marrom Glacê</button>`}
@@ -153,7 +160,7 @@ function demo(){Object.assign(d,{nome:'Patrícia Mendes',tel:'19998120000',oc:'C
 function ps(k){if(d.sv!==k){d.sv=k;d.pk='';d.sel={};d.add=[];d.est='';d.cul='';d.ext=[]}r()}
 function go(n){if(n>0){let m='';
 if(s===1&&(!d.nome||d.tel.replace(/\D/g,'').length<10||!d.oc||!d.data||!d.hora||!d.rua||!d.num||!d.bai||!d.cid||!tot()))m='Preencha nome, WhatsApp com DDD, motivo, data, horário, endereço (rua, número, bairro e cidade) e quantidade de pessoas.';
-if(s===2){const its=Object.values(d.sel).flat().length;if(!d.sv)m='Escolha o tipo de serviço.';else if(SV[d.sv].pk&&!d.pk)m='Escolha o padrão.';else if(d.sv==='almoco'&&(!d.est||(d.est!=='trad'&&!d.cul)))m='Escolha o estilo e a culinária.';else if(d.sv==='almoco'&&d.est==='int'&&CUL[d.cul].ch.some((g,j)=>!(d.sel['c'+j]||[]).length))m='Escolha pelo menos uma opção de '+CUL[d.cul].ch.filter((g,j)=>!(d.sel['c'+j]||[]).length).map(g=>g[0].toLowerCase()).join(' e ')+'.';else if(d.sv==='almoco'&&d.est==='trad'&&(!d.ent||!(d.sel.pp||[]).length||(d.ent==='Sim'&&!(d.sel.en||[]).length)))m='Responda sobre a entrada e escolha os itens do prato principal.';else if(['lanche','pizza'].includes(d.sv)&&!its)m='Escolha pelo menos uma opção.'}
+if(s===2){const its=Object.values(d.sel).flat().length;if(!d.sv)m='Escolha o tipo de serviço.';else if(SV[d.sv].pk&&!d.pk)m='Escolha o padrão.';else if(d.sv==='almoco'&&(!d.est||(d.est!=='trad'&&!d.cul)))m='Escolha o estilo e a culinária.';else if(d.sv==='almoco'&&d.est==='int'&&CUL[d.cul].ch.some((g,j)=>!(d.sel['c'+j]||[]).length))m='Escolha pelo menos uma opção de '+CUL[d.cul].ch.filter((g,j)=>!(d.sel['c'+j]||[]).length).map(g=>g[0].toLowerCase()).join(' e ')+'.';else if(d.sv==='almoco'&&d.est==='trad'&&(!d.ent||!(d.sel.pp||[]).length||(d.ent==='Sim'&&!(d.sel.en||[]).length)))m='Responda sobre a entrada e escolha os itens do prato principal.';else if(['lanche','pizza'].includes(d.sv)&&!its)m='Escolha pelo menos uma opção.';else if(d.sgm==='eu'&&!(d.sel.sg||[]).length)m='Escolha os salgados ou marque “Deixa com o Marrom Glacê”.'}
 if(s===3&&((d.sv!=='pizza'&&!d.fm)||!d.cop||!d.fx))m='Escolha o formato, a copeira e a faixa de investimento.';
 if(m){$('er').textContent=m;return}}
 s+=n;r();window.scrollTo(0,0)}

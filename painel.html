@@ -136,7 +136,7 @@ const RGL=[['f6','Criança de 6 a 10 anos conta como (fração de adulto)',0.1],
 let PED=[
 {id:'EV-0012',cli:'Patrícia Mendes',tel:'(19) 99812-0000',email:'patricia@email.com',motivo:'Confraternização de família',data:'2026-12-20',hora:'17:00',local:'Rua das Palmeiras, 210 · Vila Rezende',cid:'Piracicaba',ad:16,c6:0,c2:0,sv:'Lanche / fim de tarde · Patês, Lanches de baguete, Salgados assados, Tábua de frios, Docinhos',fm:'ret',cop:false,gar:false,faixa:'Não sei, quero uma sugestão',fmax:0,origem:'Indicação (rotisseria)',obs:'Quer patês, baguetes frias, salgadinhos e frios. Aceita sugestões.',itens:['pate','baguete','salg_assado','frios','docinho'],st:'revisar',rec:'21/11 08:26'},
 {id:'EV-0011',cli:'Renata Oliveira',tel:'(19) 99745-0000',email:'renata@email.com',motivo:'Batizado',data:'2027-01-23',hora:'11:30',local:'Salão do prédio São Judas · Centro',cid:'Piracicaba',ad:30,c6:6,c2:4,sv:'Almoço ou jantar · Tradicional · Entrada: Salada de folhas, Salpicão · Prato: Arroz, Feijão, Massa, Proteína',fm:'comp',cop:true,gar:false,faixa:'R$ 70 a R$ 100 por pessoa',fmin:70,fmax:100,origem:'Instagram',obs:'Pensamos em risoto, massas, uma carne vermelha e outras opções.',itens:['salada','salpicao','arroz','feijao','massa','proteina'],st:'revisar',rec:'21/11 08:10'},
-{id:'EV-0010',cli:'Depto. de Economia · ESALQ',tel:'(19) 3429-0000',email:'eventos@email.com',motivo:'Treinamento',data:'2026-12-02',hora:'09:30',local:'Av. Pádua Dias, 11 · Agronomia',cid:'Piracicaba',ad:45,c6:0,c2:0,sv:'Coffee break · Padrão Mediano',fm:'emb',cop:false,gar:false,faixa:'Até R$ 40 por pessoa',fmax:40,origem:'Google',obs:'',itens:['salg_assado','mini_lanche','bolo','petit','docinho','kit'],st:'enviado',rec:'19/11 09:34'},
+{id:'EV-0010',cli:'Depto. de Economia · ESALQ',tel:'(19) 3429-0000',email:'eventos@email.com',motivo:'Treinamento',data:'2026-12-02',hora:'09:30',local:'Av. Pádua Dias, 11 · Agronomia',cid:'Piracicaba',ad:45,c6:0,c2:0,sv:'Coffee break · Padrão Mediano · Salgados: Esfiha de carne, Empada de frango, Folhado de frango',fm:'emb',cop:false,gar:false,faixa:'Até R$ 40 por pessoa',fmax:40,origem:'Google',obs:'',itens:['salg_assado','mini_lanche','bolo','petit','docinho','kit'],st:'enviado',rec:'19/11 09:34'},
 {id:'EV-0009',cli:'Carla Vieira',tel:'(19) 99630-0000',email:'carla@email.com',motivo:'Aniversário (Lucas, 40 anos)',data:'2026-12-05',hora:'19:30',local:'Rua Moraes Barros, 1500 · Centro',cid:'Piracicaba',ad:26,c6:4,c2:0,sv:'Facciamo Pizza · Calabresa, Margherita, Portuguesa, Frango e milho, Quatro queijos, Palmito · Doces: Chocolate e morango, Beijinho com confete',fm:'comp',cop:false,gar:true,faixa:'R$ 70 a R$ 100 por pessoa',fmax:100,origem:'Instagram',obs:'',itens:['pizza'],st:'aprovado',rec:'12/11 16:17'},
 {id:'EV-0008',cli:'Marcos Lima',tel:'(19) 99501-0000',email:'',motivo:'Aniversário',data:'2026-12-13',hora:'',local:'',cid:'',ad:25,c6:0,c2:0,sv:'',fm:'',cop:false,gar:false,faixa:'',fmax:0,origem:'Instagram',obs:'Parou na escolha do serviço.',itens:[],st:'incompleto',rec:'20/11 22:41'}
 ];
@@ -161,13 +161,13 @@ if(p.fm&&p.fm!=='ret')sv.push(['Entrega ('+(p.cid==='Piracicaba'?'Piracicaba':'r
 const svT=sv.reduce((a,b)=>a+b[1],0);let hx=0;const sun=p.data&&dow(p.data)===0&&p.hora>='13:30';
 if(sun&&p.fm!=='ret')hx=(food+svT)*RG.hx/100;
 const tot=Math.max(0,food+svT+hx-(+p.desc||0));return{L,food,sv,svT,hx,sun,tot,pp:tot/totp(p),e}}
-function tabs(){const n=PED.filter(p=>p.st==='revisar').length;const T=[['painel','Painel'],['pedidos','Pedidos'+(n?`<span class="n">${n}</span>`:'')],['catalogo','Catálogo e preços'],['regras','Regras'],['producao','Produção']];
+function tabs(){const n=PED.filter(p=>p.st==='revisar').length;const T=[['painel','Painel'],['pedidos','Pedidos'+(n?`<span class="n">${n}</span>`:'')],['catalogo','Catálogo e preços'],['salgados','Salgados'],['regras','Regras'],['producao','Produção']];
 $('tabs').innerHTML=T.map(t=>`<div class="tab ${view===t[0]||(t[0]==='pedidos'&&(view==='pedido'||view==='enviado'))?'on':''}" onclick="go('${t[0]}')">${t[1]}</div>`).join('')}
 function go(v,id){view=v;cur=id||null;render();window.scrollTo(0,0)}
 function badge(st){return `<span class="badge b-${st}">${ST[st]}</span>`}
 function pRow(p){const c=p.st!=='incompleto'?calc(p):null;return `<div class="row" onclick="go('pedido','${p.id}')"><div class="who"><b>${p.cli}</b><div class="meta">${p.id} · ${p.motivo} · ${dbr(p.data)} · ${totp(p)} pessoas${p.sv?' · '+p.sv.split(' · ')[0]:''}</div></div><div style="text-align:right">${badge(p.st)}${c?`<div class="sm" style="margin-top:4px">${brl(c.tot)}</div>`:''}</div></div>`}
 function render(){tabs();let h=flash?`<div class="flash">${flash}</div>`:'';flash='';
-if(view==='painel')h+=vPainel();if(view==='pedidos')h+=vPedidos();if(view==='pedido')h+=vPedido(PED.find(p=>p.id===cur));if(view==='enviado')h+=vEnviado(PED.find(p=>p.id===cur));if(view==='catalogo')h+=vCat();if(view==='regras')h+=vRegras();if(view==='producao')h+=vProd();
+if(view==='painel')h+=vPainel();if(view==='pedidos')h+=vPedidos();if(view==='pedido')h+=vPedido(PED.find(p=>p.id===cur));if(view==='enviado')h+=vEnviado(PED.find(p=>p.id===cur));if(view==='catalogo')h+=vCat();if(view==='salgados')h+=vSalg();if(view==='regras')h+=vRegras();if(view==='producao')h+=vProd();
 $('main').innerHTML=h}
 function vPainel(){const rv=PED.filter(p=>p.st==='revisar'),en=PED.filter(p=>p.st==='enviado'),ap=PED.filter(p=>p.st==='aprovado'),inc=PED.filter(p=>p.st==='incompleto');
 const fat=ap.reduce((a,p)=>a+calc(p).tot,0);
@@ -233,7 +233,13 @@ return `<button class="lnk" onclick="go('pedido','${p.id}')">← Voltar ao pedid
 <div class="card"><h3>E-mail</h3><div class="mail"><div class="h">Para: ${p.email}<br>Assunto: Proposta ${p.or} · Marrom Glacê Buffet<br>Anexo: ${p.or}.pdf</div><div class="b">${msg}</div></div></div>
 <div class="card"><h3>Automático daqui para a frente</h3><div class="sm">Se não houver resposta em 2 dias, sai um lembrete automático. Quando a proposta for aprovada, você é avisado, o evento entra na agenda e as quantidades vão para a lista de produção.</div>${p.st==='enviado'?`<div class="actions"><button class="pri" onclick="clienteAprovou('${p.id}')">Simular: ${p.cli.split(' ')[0]} aprovou</button></div>`:''}</div>
 </div></div>`}
-let EXN=20,FSV='';
+const SG_DEF={lista:['Esfiha de carne','Esfiha de frango','Enroladinho de salsicha','Empada de frango','Empada de palmito','Bauruzinho','Folhado de frango','Pão de batata com catupiry','Mini pizza','Croissant de presunto e queijo','Mini quiche de alho-poró','Folhado de queijo brie e damasco'],
+pk:{'coffee|Simples':[0,1,2,3,4,5],'coffee|Mediano':[0,1,2,3,4,5,6,7,8],'coffee|Sofisticado':[0,1,2,3,4,5,6,7,8,9,10,11],'brunch|Simples':[0,1,2,3,4,5],'brunch|Mediano':[0,1,2,3,4,5,6,7,8],'brunch|Sofisticado':[0,1,2,3,4,5,6,7,8,9,10,11]},
+max:{'coffee|Simples':1,'coffee|Mediano':3,'coffee|Sofisticado':3,'brunch|Simples':1,'brunch|Mediano':3,'brunch|Sofisticado':3}};
+function sgLoad(){try{const j=JSON.parse(localStorage.getItem('mg_salgados_v1'));if(j&&j.lista&&j.pk&&j.max)return j}catch(e){}return JSON.parse(JSON.stringify(SG_DEF))}
+function sgSave(){try{localStorage.setItem('mg_salgados_v1',JSON.stringify(SG))}catch(e){}}
+let SG=sgLoad();
+let EXN=20,FSV='',SGN='';
 function vCat(){const ex=EXN;const L=CAT.map((c,i)=>[c,i]).filter(([c])=>!FSV||c.sv.includes(FSV));
 const sim=c=>{const aq=Math.ceil((c.rend*ex-1e-9)/c.mult)*c.mult;return [aq,`${num(ex)} × ${fq2(c.rend)} = ${fq2(c.rend*ex)} ${uu(c.rend*ex,c.un)}`]};
 const chips=c=>c.sv.map(s=>`<span class="chip">${SVN[s]}</span>`).join(' ');
@@ -260,6 +266,21 @@ ${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="mar
 <b>Arredondar de:</b> como o item é produzido. O sistema arredonda para cima nesse múltiplo. Ex.: salgados de 25 em 25, patês de 0,5 em 0,5 kg.<br>
 <b>Preço:</b> valor de venda por unidade (por kg, por unidade, por baguete…). A cliente não vê esses preços.<br>
 <b>Para ${ex} pessoas:</b> a conta que o sistema faz num pedido real, para conferir se as quantidades fazem sentido.</div>`}
+const SGC=[['coffee|Simples','Coffee','Simples'],['coffee|Mediano','Coffee','Mediano'],['coffee|Sofisticado','Coffee','Sofisticado'],['brunch|Simples','Brunch','Simples'],['brunch|Mediano','Brunch','Mediano'],['brunch|Sofisticado','Brunch','Sofisticado']];
+function sgT(k,i,on){const a=SG.pk[k]||[];SG.pk[k]=on?[...new Set(a.concat(i))].sort((x,y)=>x-y):a.filter(x=>x!==i);sgSave();flash='Salgados atualizados. O formulário já mostra a lista nova.';render()}
+function sgMax(k,v){SG.max[k]=Math.max(1,Math.min(10,+v||1));sgSave();flash='Limite atualizado no formulário.';render()}
+function sgAdd(){const n=(SGN||'').trim();if(!n)return;if(SG.lista.some(x=>x.toLowerCase()===n.toLowerCase())){flash=n+' já está na lista.';render();return}SG.lista.push(n);SGN='';sgSave();flash=n+' cadastrado. Marque em quais padrões ele aparece.';render()}
+function sgDel(i){const n=SG.lista[i];if(!confirmDel(i))return;SG.lista.splice(i,1);Object.keys(SG.pk).forEach(k=>{SG.pk[k]=SG.pk[k].filter(x=>x!==i).map(x=>x>i?x-1:x)});sgSave();flash=n+' removido de todos os padrões.';render()}
+let SGDEL=-1;function confirmDel(i){if(SGDEL===i){SGDEL=-1;return true}SGDEL=i;flash='Clique de novo em “Remover” para confirmar.';render();return false}
+function sgReset(){SG=JSON.parse(JSON.stringify(SG_DEF));sgSave();flash='Lista de exemplo restaurada.';render()}
+function vSalg(){const has=(k,i)=>(SG.pk[k]||[]).includes(i);
+return `<h2>Salgados por padrão</h2><div class="alert a-info">A cliente que marcar “Quero escolher” no formulário vê só os salgados liberados para o padrão dela, até o limite definido. Quem marcar “Deixa com o Marrom Glacê” segue como hoje: você escolhe na proposta. Lista de exemplo, troque pelos salgados reais.</div>
+<div class="card" style="overflow-x:auto"><table><tr><th>Salgado</th>${SGC.map(c=>`<th class="r" style="text-align:center">${c[1]}<br><span class="sm">${c[2]}</span></th>`).join('')}<th></th></tr>
+<tr><td class="sm"><b>Quantos a cliente escolhe</b></td>${SGC.map(c=>`<td style="text-align:center"><input class="qi" type="number" min="1" max="10" value="${SG.max[c[0]]||1}" onchange="sgMax('${c[0]}',this.value)"></td>`).join('')}<td></td></tr>
+${SG.lista.map((n,i)=>`<tr><td>${n}</td>${SGC.map(c=>`<td style="text-align:center"><input type="checkbox" ${has(c[0],i)?'checked':''} onchange="sgT('${c[0]}',${i},this.checked)"></td>`).join('')}<td class="r"><button class="sm" onclick="sgDel(${i})">${SGDEL===i?'Confirmar':'Remover'}</button></td></tr>`).join('')}
+<tr><td class="sm">Total liberado</td>${SGC.map(c=>`<td style="text-align:center" class="sm">${(SG.pk[c[0]]||[]).length}</td>`).join('')}<td></td></tr></table></div>
+<div class="card" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b>Novo salgado</b><input id="sgn" value="${SGN}" placeholder="Ex.: Coxinha de frango assada" style="flex:1;min-width:200px" oninput="SGN=this.value" onkeydown="if(event.key==='Enter')sgAdd()"><button onclick="sgAdd()">Cadastrar</button></div>
+<div class="sm" style="margin-top:6px">Nesta demonstração, as mudanças ficam salvas neste navegador. Abra o formulário nele para ver o resultado. <a href="#" onclick="sgReset();return false">Restaurar lista de exemplo</a></div>`}
 function vRegras(){return `<h2>Regras do orçamento</h2><div class="alert a-info">Valores de exemplo. O Franklin define tudo aqui, e o sistema aplica em cada pedido.</div><div class="card">${RGL.map(r=>`<div class="tot" style="align-items:center;padding:8px 0;border-bottom:1px solid #F0EAE0"><span>${r[1]}</span><input class="pi" type="number" step="${r[2]}" value="${RG[r[0]]}" onchange="RG['${r[0]}']=+this.value||0;flash='Regra atualizada. Orçamentos pendentes recalculados.';render()"></div>`).join('')}</div>`}
 function vProd(){const ap=PED.filter(p=>p.st==='aprovado').sort((a,b)=>a.data.localeCompare(b.data));
 if(!ap.length)return `<h2>Produção</h2><div class="card sm">Nenhum evento aprovado ainda.</div>`;

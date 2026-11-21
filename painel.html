@@ -62,7 +62,7 @@ button.lnk{border:none;background:none;color:var(--acc2);padding:4px;font-weight
 .mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}.mail .h{background:#F7F4EE;padding:8px 12px;font-size:13px;color:var(--mut)}.mail .b{padding:12px;white-space:pre-line}
 .demo{background:var(--accbg);border:1px dashed var(--acc);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--acc2);margin-bottom:12px}
 .mob{display:none}.mrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:14px}.mrow>span:first-child{color:var(--mut)}
-.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#F3EDE3;border-radius:16px;padding:2px 9px;font-size:12px;white-space:nowrap;display:inline-block;margin:2px 2px 0 0}
+.chip.off{background:transparent;border:1px dashed #CDBFAE;color:#A89A88}.chip.tg{cursor:pointer;user-select:none}.chip.tg:hover{outline:1px solid #B8652A}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#F3EDE3;border-radius:16px;padding:2px 9px;font-size:12px;white-space:nowrap;display:inline-block;margin:2px 2px 0 0}
 @media(max-width:760px){.desk{display:none}.mob{display:block}.mrow .qi,.mrow .pi{width:80px}.qi{width:54px;padding:6px 4px}.pi{width:62px;padding:6px 4px}table{font-size:13px}td,th{padding:6px 2px}h2{font-size:20px}.topin img{height:36px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.g2,.compare{grid-template-columns:1fr}.user{display:none}.hide-m{display:none}.kv{grid-template-columns:96px 1fr}}
 </style>
 </head>
@@ -131,6 +131,10 @@ I('m_ori','Menu culinária Oriental','Temático internacional',['almoco'],'pesso
 I('m_por','Menu culinária Portuguesa','Temático internacional',['almoco'],'pessoa',1,1,95),
 I('pizza','Rodízio Facciamo Pizza (sabores à escolha)','Rodízio',['pizza'],'pessoa',1,1,79)
 ];
+CAT.forEach(c=>c.d=c.sv.slice());
+function catSave(){try{const o={};CAT.forEach(c=>o[c.id]={n:c.nome,sv:c.sv,d:c.d,form:c.form});localStorage.setItem('mg_cat_v1',JSON.stringify(o))}catch(e){}}
+try{const o=JSON.parse(localStorage.getItem('mg_cat_v1')||'null');if(o)CAT.forEach(c=>{if(o[c.id]){c.sv=o[c.id].sv;c.form=o[c.id].form}})}catch(e){}
+function svT(i,k){const c=CAT[i];if(c.sv.includes(k)){if(c.sv.length===1){flash='O item precisa aparecer em pelo menos um serviço.';render();return}c.sv=c.sv.filter(x=>x!==k);flash=c.nome+' saiu de '+SVN[k]+'.'}else{c.sv=Object.keys(SVN).filter(x=>x===k||c.sv.includes(x));flash=c.nome+' agora aparece em '+SVN[k]+'.'}catSave();render()}
 let RG={f6:0.5,f2:0,copeira:285,copPor:50,garcom:250,garPor:30,entPira:30,entReg:60,hx:15,val:7};
 const RGL=[['f6','Criança de 6 a 10 anos conta como (fração de adulto)',0.1],['f2','Criança de 2 a 5 anos conta como (fração de adulto)',0.1],['copeira','Valor da copeira (R$)',1],['copPor','Pessoas atendidas por copeira',1],['garcom','Valor do garçom (R$)',1],['garPor','Pessoas atendidas por garçom',1],['entPira','Taxa de entrega em Piracicaba (R$)',1],['entReg','Taxa de entrega na região (R$)',1],['hx','Acréscimo de hora extra, domingo após 13h30 (%)',1],['val','Validade da proposta (dias)',1]];
 let PED=[
@@ -242,25 +246,25 @@ let SG=sgLoad();
 let EXN=20,FSV='',SGN='';
 function vCat(){const ex=EXN;const L=CAT.map((c,i)=>[c,i]).filter(([c])=>!FSV||c.sv.includes(FSV));
 const sim=c=>{const aq=Math.ceil((c.rend*ex-1e-9)/c.mult)*c.mult;return [aq,`${num(ex)} × ${fq2(c.rend)} = ${fq2(c.rend*ex)} ${uu(c.rend*ex,c.un)}`]};
-const chips=c=>c.sv.map(s=>`<span class="chip">${SVN[s]}</span>`).join(' ');
+const chips=(c,i)=>Object.keys(SVN).map(s=>`<span class="chip tg ${c.sv.includes(s)?'':'off'}" title="Clique para ${c.sv.includes(s)?'tirar de':'colocar em'} ${SVN[s]}" onclick="svT(${i},'${s}')">${c.sv.includes(s)?'✓ ':'+ '}${SVN[s]}</span>`).join(' ');
 const inp=(i,k,step,cls)=>`<input class="${cls}" type="number" step="${step}" value="${CAT[i][k]}" onchange="CAT[${i}].${k}=+this.value||${k==='mult'?1:0};flash='Catálogo atualizado. Orçamentos pendentes recalculados.';render()">`;
-const frm=(c,i)=>`<label class="ck" style="padding:0;font-size:13px;white-space:nowrap"><input type="checkbox" ${c.form?'checked':''} onchange="CAT[${i}].form=this.checked;flash=CAT[${i}].form?'${c.nome} volta a aparecer no formulário.':'${c.nome} saiu do formulário e entra automático no orçamento.';render()"><span>${c.form?'Cliente escolhe':'Automático'}</span></label>`;
-return `<h2>Catálogo e preços</h2><div class="alert a-info">É a mesma lista que aparece para a cliente no formulário. Altere preço, rendimento ou arredondamento e os orçamentos ainda não enviados são recalculados na hora. Teste: mude o preço dos patês e abra o pedido da Patrícia.</div>
+const frm=(c,i)=>`<label class="ck" style="padding:0;font-size:13px;white-space:nowrap"><input type="checkbox" ${c.form?'checked':''} onchange="CAT[${i}].form=this.checked;catSave();flash=CAT[${i}].form?'${c.nome} volta a aparecer no formulário.':'${c.nome} saiu do formulário e entra automático no orçamento.';render()"><span>${c.form?'Cliente escolhe':'Automático'}</span></label>`;
+return `<h2>Catálogo e preços</h2><div class="alert a-info">É a mesma lista que aparece para a cliente no formulário. Clique nas etiquetas de serviço para escolher onde cada item aparece. Altere preço, rendimento ou arredondamento e os orçamentos ainda não enviados são recalculados na hora. Teste: mude o preço dos patês e abra o pedido da Patrícia.</div>
 <div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b>Serviço</b><select onchange="FSV=this.value;render()"><option value="">Todos (${CAT.length} itens)</option>${Object.entries(SVN).map(([k,v])=>`<option value="${k}" ${FSV===k?'selected':''}>${v}</option>`).join('')}</select><b style="margin-left:8px">Simular</b><input class="qi" type="number" min="1" value="${ex}" onchange="EXN=Math.max(1,+this.value||1);render()"><b>pessoas</b></div>
 <div class="card desk" style="overflow-x:auto"><table><tr><th>Item</th><th>No formulário</th><th class="r">Quanto vai por pessoa</th><th class="r">Arredondar de</th><th class="r">Preço (R$)</th><th class="r">Para ${ex} pessoas</th></tr>
-${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="margin-top:3px">${chips(c)}</div></td><td>${frm(c,i)}</td>
+${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="margin-top:3px">${chips(c,i)}</div></td><td>${frm(c,i)}</td>
 <td class="r" style="white-space:nowrap">${inp(i,'rend',0.01,'qi')} <span class="sm">${c.un}</span></td>
 <td class="r" style="white-space:nowrap">${inp(i,'mult',c.un==='kg'?0.1:1,'qi')} <span class="sm">${c.un}</span></td>
 <td class="r" style="white-space:nowrap">${inp(i,'preco',0.1,'pi')} <span class="sm">/${c.un}</span></td>
 <td class="r" style="white-space:nowrap"><div class="sm">${cta}</div>${Math.abs(aq-c.rend*ex)>1e-9?'<div class="sm">arredonda para</div>':''}<b>${fq(aq,c.un)} ${uu(aq,c.un)}</b> · ${brl(aq*c.preco)}</td></tr>`}).join('')}
 </table></div>
-<div class="mob">${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<div class="card" style="padding:12px"><b>${c.nome}</b><div style="margin:4px 0">${chips(c)}</div>${frm(c,i)}
+<div class="mob">${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<div class="card" style="padding:12px"><b>${c.nome}</b><div style="margin:4px 0">${chips(c,i)}</div>${frm(c,i)}
 <div class="mrow"><span>Por pessoa</span><span>${inp(i,'rend',0.01,'qi')} ${c.un}</span></div>
 <div class="mrow"><span>Arredondar de</span><span>${inp(i,'mult',c.un==='kg'?0.1:1,'qi')} ${c.un}</span></div>
 <div class="mrow"><span>Preço</span><span>R$ ${inp(i,'preco',0.1,'pi')} /${c.un}</span></div>
 <div class="sm" style="margin-top:6px">Para ${ex} pessoas: ${cta}${Math.abs(aq-c.rend*ex)>1e-9?' → arredonda para':''} <b style="color:var(--ink)">${fq(aq,c.un)} ${uu(aq,c.un)}</b> · ${brl(aq*c.preco)}</div></div>`}).join('')}</div>
 <div class="card sm" style="line-height:1.7"><b style="color:var(--ink)">Como ler cada coluna</b><br>
-<b>Etiquetas abaixo do nome:</b> em quais serviços o item aparece no formulário.<br>
+<b>Etiquetas abaixo do nome:</b> em quais serviços o item aparece. Clique numa etiqueta para ligar (✓) ou desligar (+) o item naquele serviço.<br>
 <b>No formulário:</b> “Cliente escolhe” mostra o item como opção para a cliente. “Automático” não aparece para ela, mas entra sozinho no orçamento quando o serviço é escolhido (ex.: kit de bebidas do coffee break).<br>
 <b>Quanto vai por pessoa:</b> quantidade por convidado adulto. Ex.: 0,04 kg de patês = 40 g por pessoa.<br>
 <b>Arredondar de:</b> como o item é produzido. O sistema arredonda para cima nesse múltiplo. Ex.: salgados de 25 em 25, patês de 0,5 em 0,5 kg.<br>

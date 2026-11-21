@@ -88,7 +88,7 @@ const nomes=Object.entries(d.sel).filter(e=>e[0]!=='sg').map(e=>e[1]).flat().con
 let sv=v.n.split(' / ')[0].replace(' (rodízio em casa)','')+(det?' · '+det:'');if(SG.pk[d.sv+'|'+d.pk])sv+=' · Salgados: '+((d.sel.sg||[]).length?d.sel.sg.join(', '):'sugestão do Marrom Glacê');if(nomes.length)sv+=' · '+nomes.join(', ');
 const fx={'Até R$ 40 por pessoa':[0,40],'R$ 40 a R$ 70 por pessoa':[40,70],'R$ 70 a R$ 100 por pessoa':[70,100],'Acima de R$ 100 por pessoa':[100,0]}[d.fx]||[0,0];
 const now=new Date(),p2=x=>String(x).padStart(2,'0');
-L.push({id,cli:d.nome,tel:d.tel,email:'',motivo:d.oc+(d.aniv?' ('+d.aniv+')':''),data:d.data,hora:d.hora,local:d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai,cid:d.cid,ad:+d.ad||0,c6:+d.c6||0,c2:+d.c2||0,sv,svk:d.sv,pk:d.pk,cul:d.est==='int'?d.cul:'',nomes,fm:d.fm,cop:d.cop==='Sim',gar:d.ext.includes('Garçom'),faixa:d.fx,fmin:fx[0],fmax:fx[1],origem:'Formulário',obs:d.obs,st:'revisar',rec:p2(now.getDate())+'/'+p2(now.getMonth()+1)+' '+p2(now.getHours())+':'+p2(now.getMinutes())});
+L.push({id,cli:d.nome,tel:d.tel,email:d.email.trim(),motivo:d.oc+(d.aniv?' ('+d.aniv+')':''),data:d.data,hora:d.hora,local:d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai,cid:d.cid,ad:+d.ad||0,c6:+d.c6||0,c2:+d.c2||0,sv,svk:d.sv,pk:d.pk,cul:d.est==='int'?d.cul:'',nomes,fm:d.fm,cop:d.cop==='Sim',gar:d.ext.includes('Garçom'),faixa:d.fx,fmin:fx[0],fmax:fx[1],origem:'Formulário',obs:d.obs,st:'revisar',rec:p2(now.getDate())+'/'+p2(now.getMonth()+1)+' '+p2(now.getHours())+':'+p2(now.getMinutes())});
 try{localStorage.setItem('mg_pedidos_v1',JSON.stringify(L))}catch(e){}d.num=id;s=5;r();window.scrollTo(0,0)}
 const FX=['Até R$ 40 por pessoa','R$ 40 a R$ 70 por pessoa','R$ 70 a R$ 100 por pessoa','Acima de R$ 100 por pessoa','Não sei, quero uma sugestão'];
 const RS=['Celíacos (sem glúten)','Intolerantes à lactose','Diabéticos','Veganos','Vegetarianos'];
@@ -96,7 +96,7 @@ const BB=['Água sem gás (galão 10 ou 20 L)','Água sem gás (garrafa 500 ml)'
 const UT=['Copos de vidro','Pratos de sobremesa','Garfos de sobremesa','Colheres de sobremesa','Jarra de inox','Mesa de plástico com 4 cadeiras','Toalha para mesa de 4 lugares','Carrinho bar cooler','Guardanapos de tecido','Sousplat'];
 const ES=['Mesa aparador','Toalha para aparador','Cozinha de apoio'];
 const OC=['','Aniversário','Batizado','Confraternização','Reunião de família','Encontro de amigos','Evento corporativo','Treinamento / palestra','Outro'];
-function nd(){return{nome:'',tel:'',oc:'',aniv:'',data:'',hora:'',cep:'',cid:'Piracicaba',rua:'',num:'',bai:'',comp:'',ad:'',c6:'',c2:'',sv:'',pk:'',sel:{},sgm:'',add:[],est:'',ent:'',cul:'',fm:'',lou:'',cop:'',ext:[],bb:[],ut:[],es:[],rs:[],fx:'',obs:''}}
+function nd(){return{nome:'',tel:'',email:'',oc:'',aniv:'',data:'',hora:'',cep:'',cid:'Piracicaba',rua:'',num:'',bai:'',comp:'',ad:'',c6:'',c2:'',sv:'',pk:'',sel:{},sgm:'',add:[],est:'',ent:'',cul:'',fm:'',lou:'',cop:'',ext:[],bb:[],ut:[],es:[],rs:[],fx:'',obs:''}}
 let s=1,d=nd(),GI={};
 const $=id=>document.getElementById(id);
 const tot=()=>(+d.ad||0)+(+d.c6||0)+(+d.c2||0);
@@ -126,6 +126,7 @@ let h='';
 if(s===1){h=`<div class="tt">Contato e evento</div>
 <label class="lb">Nome completo</label><input id="nome" value="${d.nome}" placeholder="Maria Souza">
 <label class="lb">WhatsApp com DDD</label><input id="tel" inputmode="numeric" value="${d.tel}" placeholder="19991234567">
+<label class="lb">E-mail</label><input id="email" type="email" inputmode="email" autocomplete="email" value="${d.email}" placeholder="maria@email.com">
 <label class="lb">Motivo do evento</label><select id="oc">${OC.map(o=>`<option ${d.oc===o?'selected':''}>${o}</option>`).join('')}</select>
 ${d.oc==='Aniversário'?`<label class="lb">Nome do aniversariante</label><input id="aniv" value="${d.aniv}">`:''}
 <div class="g2"><div><label class="lb">Data</label><input type="date" id="data" value="${d.data}"></div><div><label class="lb">Horário</label><input type="time" id="hora" value="${d.hora}"></div></div>
@@ -157,7 +158,7 @@ let det=d.pk?'Padrão '+d.pk:'';if(d.sv==='almoco')det={trad:'Tradicional',int:'
 const fm={ret:'Retirada no Marrom Glacê',emb:'Só comida, em embalagens',comp:'Serviço completo'}[d.fm]||'Equipe no local';
 const row=(a,b)=>b?`<div class="rw"><span>${a}</span>${b}</div>`:'';
 h=`<div class="tt">Confira seu pedido</div><div style="margin-top:8px">
-${row('Cliente',d.nome+' · '+d.tel)}${row('Evento',d.oc+(d.aniv?' de '+d.aniv:'')+' · '+dt+' às '+d.hora)}${row('Local',d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai+' · '+d.cid+(d.cep?' · CEP '+d.cep:''))}
+${row('Cliente',d.nome+' · '+d.tel+' · '+d.email)}${row('Evento',d.oc+(d.aniv?' de '+d.aniv:'')+' · '+dt+' às '+d.hora)}${row('Local',d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai+' · '+d.cid+(d.cep?' · CEP '+d.cep:''))}
 ${row('Pessoas',`${tot()} (${d.ad||0} adultos, ${d.c6||0} de 6 a 10, ${d.c2||0} de 2 a 5)`)}
 ${row('Serviço',v.n+(det?' · '+det:''))}${row('Salgados',sgT)}${row('Itens',it.concat(d.add).join(', '))}${row('Formato',fm)}${row('Louça',d.lou)}
 ${row('Copeira',d.cop)}${row('Extras',d.ext.join(', '))}${row('Utensílios',d.ut.join(', '))}${row('Bebidas',d.bb.join(', '))}${row('Restrições',d.rs.join(', '))}${row('Investimento',d.fx)}</div>${warn()}
@@ -165,12 +166,12 @@ ${row('Copeira',d.cop)}${row('Extras',d.ext.join(', '))}${row('Utensílios',d.ut
 <button class="pri" style="width:100%;margin-top:14px" onclick="enviar()">Enviar para o Marrom Glacê</button>`}
 if(s===5){h=`<div style="text-align:center;padding:12px 0"><div style="font-size:34px;color:var(--ok)">✓</div><div class="tt">Pedido ${d.num} recebido</div><div class="sm" style="margin-top:6px">O Franklin monta uma sugestão e retorna pelo WhatsApp.</div><div class="sm" style="margin-top:6px">(Demonstração: o pedido aparece no painel aberto neste mesmo navegador.)</div><a href="painel.html" target="_blank" style="display:inline-block;margin-top:10px">Abrir o painel</a><button style="margin-top:14px" onclick="s=1;d=nd();r()">Começar de novo</button></div>`}
 $('box').innerHTML=h;
-['nome','tel','oc','aniv','data','hora','cep','cid','rua','num','bai','comp','ad','c6','c2','fx','obs','lou','cul'].forEach(k=>{const e=$(k);if(!e)return;e.oninput=e.onchange=ev=>{d[k]=e.value;if($('er'))$('er').textContent='';if(k==='data'||k==='hora')$('w1').innerHTML=warn();if(['ad','c6','c2'].includes(k))$('tt').textContent='Total: '+tot()+' pessoas';if(k==='cul'&&ev.type==='change')d.sel={};if((k==='oc'||k==='cul')&&ev.type==='change'){const y=window.scrollY;r();window.scrollTo(0,y)}}});
+['nome','tel','email','oc','aniv','data','hora','cep','cid','rua','num','bai','comp','ad','c6','c2','fx','obs','lou','cul'].forEach(k=>{const e=$(k);if(!e)return;e.oninput=e.onchange=ev=>{d[k]=e.value;if($('er'))$('er').textContent='';if(k==='data'||k==='hora')$('w1').innerHTML=warn();if(['ad','c6','c2'].includes(k))$('tt').textContent='Total: '+tot()+' pessoas';if(k==='cul'&&ev.type==='change')d.sel={};if((k==='oc'||k==='cul')&&ev.type==='change'){const y=window.scrollY;r();window.scrollTo(0,y)}}});
 }
 function demo(){Object.assign(d,{nome:'Patrícia Mendes',tel:'19998120000',oc:'Confraternização',data:'2026-12-20',hora:'17:00',cep:'13414-000',cid:'Piracicaba',rua:'Rua das Palmeiras',num:'210',bai:'Vila Rezende',comp:'',ad:'16',c6:'',c2:''});s=2;r();window.scrollTo(0,0)}
 function ps(k){if(d.sv!==k){d.sv=k;d.pk='';d.sel={};d.sgm='';d.add=[];d.est='';d.cul='';d.ext=[]}r()}
 function go(n){if(n>0){let m='';
-if(s===1&&(!d.nome||d.tel.replace(/\D/g,'').length<10||!d.oc||!d.data||!d.hora||!d.rua||!d.num||!d.bai||!d.cid||!tot()))m='Preencha nome, WhatsApp com DDD, motivo, data, horário, endereço (rua, número, bairro e cidade) e quantidade de pessoas.';
+if(s===1&&(!d.nome||d.tel.replace(/\D/g,'').length<10||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email.trim())||!d.oc||!d.data||!d.hora||!d.rua||!d.num||!d.bai||!d.cid||!tot()))m='Preencha nome, WhatsApp com DDD, e-mail válido, motivo, data, horário, endereço (rua, número, bairro e cidade) e quantidade de pessoas.';
 if(s===2){const its=Object.values(d.sel).flat().length;if(!d.sv)m='Escolha o tipo de serviço.';else if(SV[d.sv].pk&&!d.pk)m='Escolha o padrão.';else if(d.sv==='almoco'&&(!d.est||(d.est!=='trad'&&!d.cul)))m='Escolha o estilo e a culinária.';else if(d.sv==='almoco'&&d.est==='int'&&CUL[d.cul].ch.some((g,j)=>!(d.sel['c'+j]||[]).length))m='Escolha pelo menos uma opção de '+CUL[d.cul].ch.filter((g,j)=>!(d.sel['c'+j]||[]).length).map(g=>g[0].toLowerCase()).join(' e ')+'.';else if(d.sv==='almoco'&&d.est==='trad'&&(!d.ent||!(d.sel.pp||[]).length||(d.ent==='Sim'&&!(d.sel.en||[]).length)))m='Responda sobre a entrada e escolha os itens do prato principal.';else if(['lanche','pizza'].includes(d.sv)&&!its)m='Escolha pelo menos uma opção.';else if(d.sgm==='eu'&&!(d.sel.sg||[]).length)m='Escolha os salgados ou marque “Deixa com o Marrom Glacê”.'}
 if(s===3&&((d.sv!=='pizza'&&!d.fm)||!d.cop||!d.fx))m='Escolha o formato, a copeira e a faixa de investimento.';
 if(m){$('er').textContent=m;return}}

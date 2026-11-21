@@ -64,6 +64,12 @@ button.lnk{border:none;background:none;color:var(--acc2);padding:4px;font-weight
 .mob{display:none}.mrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:14px}.mrow>span:first-child{color:var(--mut)}
 .chip.off{background:transparent;border:1px dashed #CDBFAE;color:#A89A88}.chip.tg{cursor:pointer;user-select:none}.chip.tg:hover{outline:1px solid #B8652A}.br{display:grid;grid-template-columns:minmax(110px,36%) 1fr 104px;align-items:center;gap:8px;padding:5px 0;font-size:13px}.br:hover{background:var(--accbg)}.bl{color:var(--ink)}.bt{height:12px;background:#F3EDE3;border-radius:0 4px 4px 0;overflow:hidden}.bf{display:block;height:100%;background:var(--acc);border-radius:0 4px 4px 0}.bv{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}.mc{display:flex;align-items:flex-end;gap:6px;height:170px;padding-top:6px;border-bottom:1px solid var(--line)}.mcol{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;cursor:default}.mcol:hover .mbars{background:var(--accbg)}.mbars{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:2px;border-radius:4px}.mb{width:38%;max-width:18px;border-radius:4px 4px 0 0;display:block}.mb.r{background:#1F5A8C}.mb.a{background:#B5652B}.ml{font-size:11px;color:var(--mut);margin-top:4px;height:14px}.lg{display:flex;gap:16px;font-size:12px;color:var(--mut);margin-top:8px}.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.lg i.r{background:#1F5A8C}.lg i.a{background:#B5652B}.rxg select,.rxg input{width:100%;display:block;margin-top:3px;box-sizing:border-box}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#F3EDE3;border-radius:16px;padding:2px 9px;font-size:12px;white-space:nowrap;display:inline-block;margin:2px 2px 0 0}
 @media(max-width:760px){.desk{display:none}.mob{display:block}.mrow .qi,.mrow .pi{width:80px}.qi{width:54px;padding:6px 4px}.pi{width:62px;padding:6px 4px}table{font-size:13px}td,th{padding:6px 2px}h2{font-size:20px}.topin img{height:36px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.g2,.compare{grid-template-columns:1fr}.user{display:none}.hide-m{display:none}.kv{grid-template-columns:96px 1fr}}
+.cmd{border:1.5px dashed #999;padding:10px 12px;font-size:12px;color:#000;background:#fff;box-sizing:border-box;break-inside:avoid;page-break-inside:avoid;display:flex;flex-direction:column}
+.cmh{display:flex;align-items:center;gap:8px;border-bottom:2px solid #000;padding-bottom:6px}.cmh img{height:30px}.cms{font-size:17px;font-weight:800;letter-spacing:.5px}.cmc{margin-left:auto;white-space:nowrap;flex-shrink:0;font-size:17px;font-weight:800;border:2px solid #000;padding:2px 8px;border-radius:6px}
+.cmi{padding:6px 0;border-bottom:1px solid #000;line-height:1.45}.cmt{width:100%;border-collapse:collapse;margin-top:4px}.cmt td{border-bottom:1px solid #ccc;padding:4px 2px;font-size:13px}.cmt td.r{text-align:right;white-space:nowrap;font-size:14px}.cmt td.ck2{width:16px;text-align:center}
+.cmo{margin-top:6px;font-size:11px}.cmf{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;font-size:11px}
+#printArea{display:none}
+@media print{@page{size:A4;margin:8mm}body>*:not(#printArea){display:none!important}#printArea{display:grid!important;grid-template-columns:1fr 1fr;grid-auto-rows:136mm;gap:4mm}.cmd{height:136mm;overflow:hidden}}
 </style>
 </head>
 <body>
@@ -72,6 +78,7 @@ button.lnk{border:none;background:none;color:var(--acc2);padding:4px;font-weight
 <div class="tabs" id="tabs"></div>
 </div>
 <main id="main"></main>
+<div id="printArea"></div>
 <script>
 const LOGO=document.querySelector('.topin img').src;
 const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -131,9 +138,12 @@ I('m_ori','Menu culinária Oriental','Temático internacional',['almoco'],'pesso
 I('m_por','Menu culinária Portuguesa','Temático internacional',['almoco'],'pessoa',1,1,95),
 I('pizza','Rodízio Facciamo Pizza (sabores à escolha)','Rodízio',['pizza'],'pessoa',1,1,79)
 ];
-CAT.forEach(c=>c.d=c.sv.slice());
-function catSave(){try{const o={};CAT.forEach(c=>o[c.id]={n:c.nome,sv:c.sv,d:c.d,form:c.form});localStorage.setItem('mg_cat_v1',JSON.stringify(o))}catch(e){}}
-try{const o=JSON.parse(localStorage.getItem('mg_cat_v1')||'null');if(o)CAT.forEach(c=>{if(o[c.id]){c.sv=o[c.id].sv;c.form=o[c.id].form}})}catch(e){}
+const SETOR_CAT={'Salgados':'Confeitaria salgada','Tortas':'Confeitaria salgada','Salgados fritos':'Cozinha','Porções':'Cozinha','Na cerâmica':'Cozinha','Pratos':'Cozinha','Prato principal':'Cozinha','Temático internacional':'Cozinha','Entradas':'Saladas','Lanches':'Lanches e frios','Frios e patês':'Lanches e frios','Doces':'Confeitaria doce','Frutas':'Copa','Bebidas':'Copa','Rodízio':'Pizzaria'};
+let SETORES=['Cozinha','Confeitaria doce','Confeitaria salgada','Saladas','Lanches e frios','Copa','Pizzaria'];
+const CMO={juntar:'Juntar no setor',individual:'Comanda individual',nao:'Não imprime'};
+CAT.forEach(c=>{c.d=c.sv.slice();c.setor=SETOR_CAT[c.cat]||'Cozinha';c.cm=['bolo','torta','quiche'].includes(c.id)?'individual':c.id==='kit'?'nao':'juntar'});
+function catSave(){try{const o={};CAT.forEach(c=>o[c.id]={n:c.nome,sv:c.sv,d:c.d,form:c.form,setor:c.setor,cm:c.cm});localStorage.setItem('mg_cat_v1',JSON.stringify(o))}catch(e){}}
+try{const o=JSON.parse(localStorage.getItem('mg_cat_v1')||'null');if(o)CAT.forEach(c=>{if(o[c.id]){c.sv=o[c.id].sv;c.form=o[c.id].form;if(o[c.id].setor)c.setor=o[c.id].setor;if(o[c.id].cm)c.cm=o[c.id].cm}})}catch(e){}
 function svT(i,k){const c=CAT[i];if(c.sv.includes(k)){if(c.sv.length===1){flash='O item precisa aparecer em pelo menos um serviço.';render();return}c.sv=c.sv.filter(x=>x!==k);flash=c.nome+' saiu de '+SVN[k]+'.'}else{c.sv=Object.keys(SVN).filter(x=>x===k||c.sv.includes(x));flash=c.nome+' agora aparece em '+SVN[k]+'.'}catSave();render()}
 let RG={f6:0.5,f2:0,copeira:285,copPor:50,garcom:250,garPor:30,entPira:30,entReg:60,hx:15,val:7};
 const RGL=[['f6','Criança de 6 a 10 anos conta como (fração de adulto)',0.1],['f2','Criança de 2 a 5 anos conta como (fração de adulto)',0.1],['copeira','Valor da copeira (R$)',1],['copPor','Pessoas atendidas por copeira',1],['garcom','Valor do garçom (R$)',1],['garPor','Pessoas atendidas por garçom',1],['entReg','Taxa de entrega para cidades fora da lista (R$)',1],['hx','Acréscimo de hora extra, domingo após 13h30 (%)',1],['val','Validade da proposta (dias)',1]];
@@ -270,6 +280,7 @@ function sgLoad(){try{const j=JSON.parse(localStorage.getItem('mg_salgados_v1'))
 function sgSave(){try{localStorage.setItem('mg_salgados_v1',JSON.stringify(SG))}catch(e){}}
 let SG=sgLoad();
 let EXN=20,FSV='',SGN='';
+function cmSel(c,i){return `<select style="font-size:12px;max-width:150px" onchange="CAT[${i}].setor=this.value;catSave();flash='${c.nome}: setor alterado.';render()">${SETORES.map(s=>`<option ${c.setor===s?'selected':''}>${s}</option>`).join('')}</select><select style="font-size:12px;max-width:150px;margin-top:3px;display:block" onchange="CAT[${i}].cm=this.value;catSave();flash='${c.nome}: comanda alterada.';render()">${Object.entries(CMO).map(([k,v])=>`<option value="${k}" ${c.cm===k?'selected':''}>${v}</option>`).join('')}</select>`}
 function vCat(){const ex=EXN;const L=CAT.map((c,i)=>[c,i]).filter(([c])=>!FSV||c.sv.includes(FSV));
 const sim=c=>{const aq=Math.ceil((c.rend*ex-1e-9)/c.mult)*c.mult;return [aq,`${num(ex)} × ${fq2(c.rend)} = ${fq2(c.rend*ex)} ${uu(c.rend*ex,c.un)}`]};
 const chips=(c,i)=>Object.keys(SVN).map(s=>`<span class="chip tg ${c.sv.includes(s)?'':'off'}" title="Clique para ${c.sv.includes(s)?'tirar de':'colocar em'} ${SVN[s]}" onclick="svT(${i},'${s}')">${c.sv.includes(s)?'✓ ':'+ '}${SVN[s]}</span>`).join(' ');
@@ -277,14 +288,14 @@ const inp=(i,k,step,cls)=>`<input class="${cls}" type="number" step="${step}" va
 const frm=(c,i)=>`<label class="ck" style="padding:0;font-size:13px;white-space:nowrap"><input type="checkbox" ${c.form?'checked':''} onchange="CAT[${i}].form=this.checked;catSave();flash=CAT[${i}].form?'${c.nome} volta a aparecer no formulário.':'${c.nome} saiu do formulário e entra automático no orçamento.';render()"><span>${c.form?'Cliente escolhe':'Automático'}</span></label>`;
 return `<h2>Catálogo e preços</h2><div class="alert a-info">É a mesma lista que aparece para a cliente no formulário. Clique nas etiquetas de serviço para escolher onde cada item aparece. Altere preço, rendimento ou arredondamento e os orçamentos ainda não enviados são recalculados na hora. Teste: mude o preço dos patês e abra o pedido da Patrícia.</div>
 <div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b>Serviço</b><select onchange="FSV=this.value;render()"><option value="">Todos (${CAT.length} itens)</option>${Object.entries(SVN).map(([k,v])=>`<option value="${k}" ${FSV===k?'selected':''}>${v}</option>`).join('')}</select><b style="margin-left:8px">Simular</b><input class="qi" type="number" min="1" value="${ex}" onchange="EXN=Math.max(1,+this.value||1);render()"><b>pessoas</b></div>
-<div class="card desk" style="overflow-x:auto"><table><tr><th>Item</th><th>No formulário</th><th class="r">Quanto vai por pessoa</th><th class="r">Arredondar de</th><th class="r">Preço (R$)</th><th class="r">Para ${ex} pessoas</th></tr>
-${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="margin-top:3px">${chips(c,i)}</div></td><td>${frm(c,i)}</td>
+<div class="card desk" style="overflow-x:auto"><table><tr><th>Item</th><th>No formulário</th><th>Comanda</th><th class="r">Quanto vai por pessoa</th><th class="r">Arredondar de</th><th class="r">Preço (R$)</th><th class="r">Para ${ex} pessoas</th></tr>
+${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="margin-top:3px">${chips(c,i)}</div></td><td>${frm(c,i)}</td><td>${cmSel(c,i)}</td>
 <td class="r" style="white-space:nowrap">${inp(i,'rend',0.01,'qi')} <span class="sm">${c.un}</span></td>
 <td class="r" style="white-space:nowrap">${inp(i,'mult',c.un==='kg'?0.1:1,'qi')} <span class="sm">${c.un}</span></td>
 <td class="r" style="white-space:nowrap">${inp(i,'preco',0.1,'pi')} <span class="sm">/${c.un}</span></td>
 <td class="r" style="white-space:nowrap"><div class="sm">${cta}</div>${Math.abs(aq-c.rend*ex)>1e-9?'<div class="sm">arredonda para</div>':''}<b>${fq(aq,c.un)} ${uu(aq,c.un)}</b> · ${brl(aq*c.preco)}</td></tr>`}).join('')}
 </table></div>
-<div class="mob">${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<div class="card" style="padding:12px"><b>${c.nome}</b><div style="margin:4px 0">${chips(c,i)}</div>${frm(c,i)}
+<div class="mob">${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<div class="card" style="padding:12px"><b>${c.nome}</b><div style="margin:4px 0">${chips(c,i)}</div>${frm(c,i)}<div class="mrow"><span>Comanda</span><span>${cmSel(c,i)}</span></div>
 <div class="mrow"><span>Por pessoa</span><span>${inp(i,'rend',0.01,'qi')} ${c.un}</span></div>
 <div class="mrow"><span>Arredondar de</span><span>${inp(i,'mult',c.un==='kg'?0.1:1,'qi')} ${c.un}</span></div>
 <div class="mrow"><span>Preço</span><span>R$ ${inp(i,'preco',0.1,'pi')} /${c.un}</span></div>
@@ -292,7 +303,7 @@ ${L.map(([c,i])=>{const [aq,cta]=sim(c);return `<tr><td>${c.nome}<div style="mar
 <div class="card sm" style="line-height:1.7"><b style="color:var(--ink)">Como ler cada coluna</b><br>
 <b>Etiquetas abaixo do nome:</b> em quais serviços o item aparece. Clique numa etiqueta para ligar (✓) ou desligar (+) o item naquele serviço.<br>
 <b>No formulário:</b> “Cliente escolhe” mostra o item como opção para a cliente. “Automático” não aparece para ela, mas entra sozinho no orçamento quando o serviço é escolhido (ex.: kit de bebidas do coffee break).<br>
-<b>Quanto vai por pessoa:</b> quantidade por convidado adulto. Ex.: 0,04 kg de patês = 40 g por pessoa.<br>
+<b>Comanda:</b> o setor que produz o item e como ele sai na comanda. “Juntar” agrupa com os outros itens do mesmo setor, “Individual” sai numa comanda só dele (ex.: bolo), “Não imprime” não gera comanda.<br><b>Quanto vai por pessoa:</b> quantidade por convidado adulto. Ex.: 0,04 kg de patês = 40 g por pessoa.<br>
 <b>Arredondar de:</b> como o item é produzido. O sistema arredonda para cima nesse múltiplo. Ex.: salgados de 25 em 25, patês de 0,5 em 0,5 kg.<br>
 <b>Preço:</b> valor de venda por unidade (por kg, por unidade, por baguete…). A cliente não vê esses preços.<br>
 <b>Para ${ex} pessoas:</b> a conta que o sistema faz num pedido real, para conferir se as quantidades fazem sentido.</div>`}
@@ -375,11 +386,30 @@ ${RX.map((r,i)=>{const a=apl(r);return `<div style="border:1px solid var(--line)
 <label class="sm">Até (pessoas)<input type="number" min="0" value="${r.max||''}" placeholder="sem máximo" onchange="rxSet(${i},'max',this.value)"></label>
 </div><div class="sm" style="margin-top:8px">${r.on&&!r.v?'Valor zerado: preencha o valor para a regra entrar nos orçamentos.':r.on?(a.length?'Aplicada agora em: '+a.join(', '):'Nenhum pedido atual se encaixa.'):'Desligada: não entra em nenhum orçamento.'}</div></div>`}).join('')}
 <button onclick="rxAdd()">+ Nova regra</button></div>`}
+let PD='',PSET=null;
+function comandas(p){const c=calc(p),out=[],grp={};c.L.forEach(l=>{if(l.c.cm==='nao'||!l.qq)return;if(l.c.cm==='individual')out.push({setor:l.c.setor,itens:[l]});else(grp[l.c.setor]=grp[l.c.setor]||[]).push(l)});
+Object.entries(grp).forEach(([s,L])=>out.push({setor:s,itens:L}));out.sort((a,b)=>SETORES.indexOf(a.setor)-SETORES.indexOf(b.setor));const n=out.length;return out.map((o,k)=>({...o,p,k:k+1,n}))}
+function cmHtml(o){const p=o.p,fm={ret:'RETIRADA NO MARROM GLACÊ',emb:'ENTREGA · EMBALAGENS',comp:'ENTREGA · SERVIÇO COMPLETO'}[p.fm]||'';
+return `<div class="cmd"><div class="cmh"><img src="${LOGO}" alt=""><div><div class="cms">${o.setor.toUpperCase()}</div><div class="sm">Comanda ${o.k} de ${o.n}</div></div><div class="cmc">${p.id}</div></div>
+<div class="cmi"><b>${p.cli}</b><br>${dbr(p.data)} (${DOW[dow(p.data)]}) · <b>${p.hora||'—'}</b> · ${totp(p)} pessoas<br><b>${fm}</b>${p.fm&&p.fm!=='ret'?' · '+p.local+' · '+p.cid:''}</div>
+<table class="cmt">${o.itens.map(l=>`<tr><td>${l.c.nome}</td><td class="r"><b>${fq(l.qq,l.c.un)}</b> ${uu(l.qq,l.c.un)}</td><td class="ck2">☐</td></tr>`).join('')}</table>
+${p.nota||p.obs?`<div class="cmo"><b>Obs.:</b> ${[p.obs,p.nota].filter(Boolean).join(' · ')}</div>`:''}
+<div class="cmf"><span>Pronto ☐</span><span>Conferido ☐</span><span>Resp.: ________</span></div></div>`}
+function imprimir(L){const all=L.flatMap(comandas).filter(o=>!PSET||PSET.includes(o.setor));if(!all.length){flash='Nenhuma comanda para imprimir com esse filtro.';render();return}
+$('printArea').innerHTML=all.map(cmHtml).join('');setTimeout(()=>window.print(),50)}
 function vProd(){const ap=PED.filter(p=>p.st==='aprovado').sort((a,b)=>a.data.localeCompare(b.data));
 if(!ap.length)return `<h2>Produção</h2><div class="card sm">Nenhum evento aprovado ainda.</div>`;
-const agg={};ap.forEach(p=>calc(p).L.forEach(l=>{agg[l.id]=(agg[l.id]||0)+l.qq}));
-return `<h2>Produção</h2><div class="g2"><div>${ap.map(p=>{const c=calc(p);return `<div class="card"><h3>${dbr(p.data)} (${DOW[dow(p.data)]}) · ${p.hora}</h3><div class="sm" style="margin-bottom:8px">${p.cli} · ${p.motivo} · ${totp(p)} pessoas · ${{ret:'Retira no Marrom',emb:'Entrega em embalagens',comp:'Serviço completo'}[p.fm]}</div><table>${c.L.map(l=>`<tr><td>${l.c.nome}</td><td class="r"><b>${fq(l.qq,l.c.un)}</b> ${uu(l.qq,l.c.un)}</td></tr>`).join('')}</table>${c.sv.length?`<div class="chips" style="margin-top:8px">${c.sv.map(s=>`<span class="chip">${s[0]}</span>`).join('')}</div>`:''}</div>`}).join('')}</div>
-<div><div class="card"><h3>Total para produzir</h3><div class="sm" style="margin-bottom:8px">Soma de todos os eventos aprovados</div><table>${Object.entries(agg).map(([id,q])=>`<tr><td>${C(id).nome}</td><td class="r"><b>${fq(q,C(id).un)}</b> ${uu(q,C(id).un)}</td></tr>`).join('')}</table></div></div></div>`}
+const datas=[...new Set(ap.map(p=>p.data))];const sel=PD?ap.filter(p=>p.data===PD):ap;
+const agg={};sel.forEach(p=>calc(p).L.forEach(l=>{agg[l.id]=(agg[l.id]||0)+l.qq}));
+const st=PSET||SETORES;
+const nC=sel.flatMap(comandas).filter(o=>st.includes(o.setor)).length;
+return `<h2>Produção</h2>
+<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>Data</b><select onchange="PD=this.value;render()"><option value="">Todas (${ap.length} eventos)</option>${datas.map(d=>`<option value="${d}" ${PD===d?'selected':''}>${dbr(d)} (${DOW[dow(d)]})</option>`).join('')}</select>
+<b style="margin-left:6px">Setores</b><span class="chips">${SETORES.map(s=>`<span class="chip tg ${st.includes(s)?'':'off'}" onclick="PSET=(PSET||SETORES.slice());PSET=PSET.includes('${s}')?PSET.filter(x=>x!=='${s}'):PSET.concat('${s}');if(PSET.length===SETORES.length)PSET=null;render()">${st.includes(s)?'✓ ':'+ '}${s}</span>`).join('')}</span>
+<button class="pri" style="margin-left:auto" onclick="imprimir(PED.filter(p=>p.st==='aprovado'&&(!PD||p.data===PD)))">Imprimir comandas (${nC})</button></div>
+<div class="g2"><div>${sel.map(p=>{const c=calc(p),cm=comandas(p).filter(o=>st.includes(o.setor));return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><h3>${dbr(p.data)} (${DOW[dow(p.data)]}) · ${p.hora}</h3><button onclick="imprimir([PED.find(x=>x.id==='${p.id}')])">Imprimir ${cm.length} comanda${cm.length===1?'':'s'}</button></div><div class="sm" style="margin-bottom:8px">${p.id} · ${p.cli} · ${p.motivo} · ${totp(p)} pessoas · ${{ret:'Retira no Marrom',emb:'Entrega em embalagens',comp:'Serviço completo'}[p.fm]||''}</div><table>${c.L.map(l=>`<tr><td>${l.c.nome}<div class="sm">${l.c.setor}${l.c.cm==='individual'?' · comanda individual':l.c.cm==='nao'?' · sem comanda':''}</div></td><td class="r"><b>${fq(l.qq,l.c.un)}</b> ${uu(l.qq,l.c.un)}</td></tr>`).join('')}</table>${c.sv.length?`<div class="chips" style="margin-top:8px">${c.sv.map(s=>`<span class="chip">${s[0]}</span>`).join('')}</div>`:''}</div>`}).join('')}</div>
+<div><div class="card"><h3>Total para produzir</h3><div class="sm" style="margin-bottom:8px">${PD?'Eventos de '+dbr(PD):'Soma de todos os eventos aprovados'}, por setor</div>${SETORES.map(s=>{const it=Object.entries(agg).filter(([id])=>C(id).setor===s);return it.length?`<div class="sm" style="margin:10px 0 4px;font-weight:700;color:var(--ink)">${s}</div><table>${it.map(([id,q])=>`<tr><td>${C(id).nome}</td><td class="r"><b>${fq(q,C(id).un)}</b> ${uu(q,C(id).un)}</td></tr>`).join('')}</table>`:''}).join('')}</div>
+<div class="card sm">As comandas saem 4 por folha A4, para recortar. O setor e o tipo de comanda de cada item são definidos na aba Catálogo e preços.</div></div></div>`}
 render();
 </script>
 </body>

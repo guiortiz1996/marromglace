@@ -171,7 +171,7 @@ if(s===5){h=`<div style="text-align:center;padding:12px 0"><div style="font-size
 $('box').innerHTML=h;
 ['nome','tel','email','oc','aniv','data','hora','cep','cid','rua','num','bai','comp','ad','c6','c2','fx','obs','lou','cul'].forEach(k=>{const e=$(k);if(!e)return;e.oninput=e.onchange=ev=>{d[k]=e.value;if($('er'))$('er').textContent='';if(k==='data'||k==='hora')$('w1').innerHTML=warn();if(['ad','c6','c2'].includes(k))$('tt').textContent='Total: '+tot()+' pessoas';if(k==='cul'&&ev.type==='change')d.sel={};if((k==='oc'||k==='cul')&&ev.type==='change'){const y=window.scrollY;r();window.scrollTo(0,y)}}});
 }
-function demo(){Object.assign(d,{nome:'Patrícia Mendes',tel:'19998120000',oc:'Confraternização',data:'2026-12-20',hora:'17:00',cep:'13414-000',cid:'Piracicaba',rua:'Rua das Palmeiras',num:'210',bai:'Vila Rezende',comp:'',ad:'16',c6:'',c2:''});s=2;r();window.scrollTo(0,0)}
+function demo(){Object.assign(d,{nome:'Mariana Costa',tel:'19999990101',oc:'Confraternização',data:'2026-12-20',hora:'17:00',cep:'13414-000',cid:'Piracicaba',rua:'Rua Exemplo',num:'120',bai:'Vila Rezende',comp:'',ad:'16',c6:'',c2:''});s=2;r();window.scrollTo(0,0)}
 function ps(k){if(d.sv!==k){d.sv=k;d.pk='';d.sel={};d.sgm='';d.add=[];d.est='';d.cul='';d.ext=[]}r()}
 function go(n){if(n>0){let m='';
 if(s===1&&(!d.nome||d.tel.replace(/\D/g,'').length<10||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email.trim())||!d.oc||!d.data||!d.hora||!d.rua||!d.num||!d.bai||!d.cid||!tot()))m='Preencha nome, WhatsApp com DDD, e-mail válido, motivo, data, horário, endereço (rua, número, bairro e cidade) e quantidade de pessoas.';

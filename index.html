@@ -81,6 +81,15 @@ function sgSave(){try{localStorage.setItem('mg_salgados_v1',JSON.stringify(SG))}
 let SG=sgLoad();
 let CATC=null;try{CATC=JSON.parse(localStorage.getItem('mg_cat_v1')||'null')}catch(e){}
 function catList(sv,base,extraOnly){if(!CATC)return base;const E=Object.values(CATC);const ok=n=>{const c=E.find(x=>x.n===n);return !c||(c.sv.includes(sv)&&c.form)};const extra=E.filter(c=>c.form&&c.sv.includes(sv)&&!c.d.includes(sv)&&!base.includes(c.n)).map(c=>c.n);return base.filter(ok).concat(extra)}
+function enviar(){d.obs=($('obs')||{}).value||d.obs;let L=[];try{L=JSON.parse(localStorage.getItem('mg_pedidos_v1')||'[]')}catch(e){}
+const n=13+L.length,id='EV-'+String(n).padStart(4,'0'),v=SV[d.sv];
+let det=d.pk?'Padrão '+d.pk:'';if(d.sv==='almoco')det={trad:'Tradicional',int:'Internacional · '+d.cul,reg:'Regional · '+d.cul}[d.est]||'';
+const nomes=Object.entries(d.sel).filter(e=>e[0]!=='sg').map(e=>e[1]).flat().concat(d.add);
+let sv=v.n.split(' / ')[0].replace(' (rodízio em casa)','')+(det?' · '+det:'');if(SG.pk[d.sv+'|'+d.pk])sv+=' · Salgados: '+((d.sel.sg||[]).length?d.sel.sg.join(', '):'sugestão do Marrom Glacê');if(nomes.length)sv+=' · '+nomes.join(', ');
+const fx={'Até R$ 40 por pessoa':[0,40],'R$ 40 a R$ 70 por pessoa':[40,70],'R$ 70 a R$ 100 por pessoa':[70,100],'Acima de R$ 100 por pessoa':[100,0]}[d.fx]||[0,0];
+const now=new Date(),p2=x=>String(x).padStart(2,'0');
+L.push({id,cli:d.nome,tel:d.tel,email:'',motivo:d.oc+(d.aniv?' ('+d.aniv+')':''),data:d.data,hora:d.hora,local:d.rua+', '+d.num+(d.comp?' ('+d.comp+')':'')+' · '+d.bai,cid:d.cid,ad:+d.ad||0,c6:+d.c6||0,c2:+d.c2||0,sv,svk:d.sv,pk:d.pk,cul:d.est==='int'?d.cul:'',nomes,fm:d.fm,cop:d.cop==='Sim',gar:d.ext.includes('Garçom'),faixa:d.fx,fmin:fx[0],fmax:fx[1],origem:'Formulário',obs:d.obs,st:'revisar',rec:p2(now.getDate())+'/'+p2(now.getMonth()+1)+' '+p2(now.getHours())+':'+p2(now.getMinutes())});
+try{localStorage.setItem('mg_pedidos_v1',JSON.stringify(L))}catch(e){}d.num=id;s=5;r();window.scrollTo(0,0)}
 const FX=['Até R$ 40 por pessoa','R$ 40 a R$ 70 por pessoa','R$ 70 a R$ 100 por pessoa','Acima de R$ 100 por pessoa','Não sei, quero uma sugestão'];
 const RS=['Celíacos (sem glúten)','Intolerantes à lactose','Diabéticos','Veganos','Vegetarianos'];
 const BB=['Água sem gás (galão 10 ou 20 L)','Água sem gás (garrafa 500 ml)','Água com gás (garrafa 500 ml)','Refrigerante Coca-Cola e Guaraná Antarctica','Suco de laranja natural (galão 5 L)','Suco de uva (garrafa 900 ml)','Cerveja long neck 330 ml','Cerveja garrafa 600 ml','Chopp','Vinho'];
@@ -153,8 +162,8 @@ ${row('Pessoas',`${tot()} (${d.ad||0} adultos, ${d.c6||0} de 6 a 10, ${d.c2||0} 
 ${row('Serviço',v.n+(det?' · '+det:''))}${row('Salgados',sgT)}${row('Itens',it.concat(d.add).join(', '))}${row('Formato',fm)}${row('Louça',d.lou)}
 ${row('Copeira',d.cop)}${row('Extras',d.ext.join(', '))}${row('Utensílios',d.ut.join(', '))}${row('Bebidas',d.bb.join(', '))}${row('Restrições',d.rs.join(', '))}${row('Investimento',d.fx)}</div>${warn()}
 <label class="lb">Alguma observação?</label><input id="obs" value="${d.obs}" placeholder="Algo que não viu aqui">
-<button class="pri" style="width:100%;margin-top:14px" onclick="s=5;r();window.scrollTo(0,0)">Enviar para o Marrom Glacê</button>`}
-if(s===5){h=`<div style="text-align:center;padding:12px 0"><div style="font-size:34px;color:var(--ok)">✓</div><div class="tt">Pedido EV-0001 recebido</div><div class="sm" style="margin-top:6px">O Franklin monta uma sugestão e retorna pelo WhatsApp.</div><div class="sm" style="margin-top:6px">(Protótipo: nada foi enviado de verdade.)</div><button style="margin-top:14px" onclick="s=1;d=nd();r()">Começar de novo</button></div>`}
+<button class="pri" style="width:100%;margin-top:14px" onclick="enviar()">Enviar para o Marrom Glacê</button>`}
+if(s===5){h=`<div style="text-align:center;padding:12px 0"><div style="font-size:34px;color:var(--ok)">✓</div><div class="tt">Pedido ${d.num||'EV-0013'} recebido</div><div class="sm" style="margin-top:6px">O Franklin monta uma sugestão e retorna pelo WhatsApp.</div><div class="sm" style="margin-top:6px">(Demonstração: o pedido aparece no painel aberto neste mesmo navegador.)</div><a href="painel.html" target="_blank" style="display:inline-block;margin-top:10px">Abrir o painel</a><button style="margin-top:14px" onclick="s=1;d=nd();r()">Começar de novo</button></div>`}
 $('box').innerHTML=h;
 ['nome','tel','oc','aniv','data','hora','cep','cid','rua','num','bai','comp','ad','c6','c2','fx','obs','lou','cul'].forEach(k=>{const e=$(k);if(!e)return;e.oninput=e.onchange=ev=>{d[k]=e.value;if($('er'))$('er').textContent='';if(k==='data'||k==='hora')$('w1').innerHTML=warn();if(['ad','c6','c2'].includes(k))$('tt').textContent='Total: '+tot()+' pessoas';if(k==='cul'&&ev.type==='change')d.sel={};if((k==='oc'||k==='cul')&&ev.type==='change'){const y=window.scrollY;r();window.scrollTo(0,y)}}});
 }

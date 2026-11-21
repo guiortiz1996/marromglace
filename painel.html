@@ -144,7 +144,15 @@ let PED=[
 {id:'EV-0009',cli:'Carla Vieira',tel:'(19) 99630-0000',email:'carla@email.com',motivo:'Aniversário (Lucas, 40 anos)',data:'2026-12-05',hora:'19:30',local:'Rua Moraes Barros, 1500 · Centro',cid:'Piracicaba',ad:26,c6:4,c2:0,sv:'Facciamo Pizza · Calabresa, Margherita, Portuguesa, Frango e milho, Quatro queijos, Palmito · Doces: Chocolate e morango, Beijinho com confete',fm:'comp',cop:false,gar:true,faixa:'R$ 70 a R$ 100 por pessoa',fmax:100,origem:'Instagram',obs:'',itens:['pizza'],st:'aprovado',rec:'12/11 16:17'},
 {id:'EV-0008',cli:'Marcos Lima',tel:'(19) 99501-0000',email:'',motivo:'Aniversário',data:'2026-12-13',hora:'',local:'',cid:'',ad:25,c6:0,c2:0,sv:'',fm:'',cop:false,gar:false,faixa:'',fmax:0,origem:'Instagram',obs:'Parou na escolha do serviço.',itens:[],st:'incompleto',rec:'20/11 22:41'}
 ];
-PED.forEach(p=>{p.lines=p.itens.map(id=>({id,q:null,p:null}));p.desc=0;p.nota='';p.or='OR-'+p.id.slice(3)});
+const PKG={'coffee|Básico':['pao_queijo','bolo','kit'],'coffee|Simples':['pao_queijo','salg_assado','bolo','kit'],'coffee|Mediano':['salg_assado','mini_lanche','bolo','petit','docinho','kit'],'coffee|Sofisticado':['salg_assado','mini_lanche','finger','bolo','petit','docinho','kit'],'brunch|Simples':['pao_queijo','salg_assado','mini_lanche','torta','bolo','frutas','kit'],'brunch|Mediano':['pao_queijo','salg_assado','mini_lanche','quiche','bolo','kit'],'brunch|Sofisticado':['salg_assado','mini_lanche','torta','quiche','bolo','docinho','kit']};
+function prep(p){if(!p.lines){p.lines=p.itens.map(id=>({id,q:null,p:null}));p.desc=0;p.nota='';p.or='OR-'+p.id.slice(3)}return p}
+function fromForm(o){let it=(PKG[o.svk+'|'+o.pk]||[]).slice();(o.nomes||[]).forEach(n=>{const c=CAT.find(c=>c.nome===n);if(c&&!it.includes(c.id))it.push(c.id)});if(o.cul){const c=CAT.find(c=>c.nome==='Menu culinária '+o.cul);if(c)it.push(c.id)}if(o.svk==='pizza')it=['pizza'];return prep({...o,itens:it,novo:true})}
+function loadForm(){let L=[];try{L=JSON.parse(localStorage.getItem('mg_pedidos_v1')||'[]')}catch(e){}let add=0;L.forEach(o=>{if(!PED.some(p=>p.id===o.id)){PED.unshift(fromForm(o));add++}});return add}
+PED.forEach(prep);loadForm();
+window.addEventListener('storage',e=>{if(e.key==='mg_pedidos_v1'){const n=loadForm();if(n){flash=n===1?'Chegou um pedido novo pelo formulário.':'Chegaram '+n+' pedidos novos pelo formulário.';render()}}});
+window.addEventListener('focus',()=>{const n=loadForm();if(n){flash='Chegou um pedido novo pelo formulário.';render()}});
+function limparTeste(){try{localStorage.removeItem('mg_pedidos_v1')}catch(e){}location.reload()}
+
 let view='painel',cur=null,flash='',tab2='';
 const $=id=>document.getElementById(id);
 const C=id=>CAT.find(c=>c.id===id);
@@ -175,7 +183,7 @@ if(view==='painel')h+=vPainel();if(view==='pedidos')h+=vPedidos();if(view==='ped
 $('main').innerHTML=h}
 function vPainel(){const rv=PED.filter(p=>p.st==='revisar'),en=PED.filter(p=>p.st==='enviado'),ap=PED.filter(p=>p.st==='aprovado'),inc=PED.filter(p=>p.st==='incompleto');
 const fat=ap.reduce((a,p)=>a+calc(p).tot,0);
-return `<div class="demo">Protótipo com dados de exemplo. Os preços e rendimentos são fictícios, para mostrar como o sistema funciona.</div>
+return `<div class="demo">Protótipo com dados de exemplo. Os preços e rendimentos são fictícios, para mostrar como o sistema funciona. Preencha o <a href="./" target="_blank">formulário</a> neste navegador e o pedido aparece aqui.${PED.some(p=>p.novo)?' <a href="#" onclick="limparTeste();return false">Apagar pedidos de teste</a>':''}</div>
 <h2>Bom dia, Franklin</h2>
 <div class="kpis"><div class="kpi"><div class="l">Para revisar</div><div class="v">${rv.length}</div></div><div class="kpi"><div class="l">Propostas enviadas</div><div class="v">${en.length}</div></div><div class="kpi"><div class="l">Aprovados</div><div class="v">${ap.length}</div></div><div class="kpi"><div class="l">Faturamento aprovado</div><div class="v" style="font-size:20px">${brl(fat)}</div></div></div>
 <div class="g2"><div>
